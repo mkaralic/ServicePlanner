@@ -5,7 +5,7 @@
         <RootNamespace>ServicePlanner.Domain</RootNamespace>
         <AssemblyName>ServicePlanner.Domain</AssemblyName>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ServicePlanner.Application.Common.Interfaces;
 using ServicePlanner.Domain.Entities;
+using ServicePlanner.Domain.Entities.ServicePlanner;
 using ServicePlanner.Infrastructure.Identity;
 using ServicePlanner.Infrastructure.Persistence.Interceptors;
 
@@ -29,6 +30,12 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<TodoList> TodoLists => Set<TodoList>();
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
+
+    public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
+    public DbSet<WorkOrderStatus> WorkOrderStatuses => Set<WorkOrderStatus>();
+    public DbSet<WorkOrderStatusHistory> WorkOrderStatusHistoryItems => Set<WorkOrderStatusHistory>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
