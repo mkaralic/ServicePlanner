@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServicePlanner.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using ServicePlanner.Infrastructure.Persistence;
 namespace ServicePlanner.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230618225333_ServicePlannerEntities")]
+    partial class ServicePlannerEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -401,7 +404,7 @@ namespace ServicePlanner.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employee", "ServicePlanner");
+                    b.ToTable("Servicer", "ServicePlanner");
                 });
 
             modelBuilder.Entity("ServicePlanner.Domain.Entities.ServicePlanner.WorkOrder", b =>
