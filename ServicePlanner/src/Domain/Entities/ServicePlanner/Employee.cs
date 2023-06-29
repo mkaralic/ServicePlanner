@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 namespace ServicePlanner.Domain.Entities.ServicePlanner;
+[Table("People", Schema = "ServicePlanner")]
 
-[Table("Employee", Schema = "ServicePlanner")]
-public class Employee : BasePerson
+public class Employee : Person
 {
-    public IEnumerable<WorkOrder> WorkOrders { get; set; }
+    public IEnumerable<WorkOrder> WorkOrders { get; set; } = Enumerable.Empty<WorkOrder>();
 }

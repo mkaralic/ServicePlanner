@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 using Duende.IdentityServer.EntityFramework.Options;
 using MediatR;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
@@ -30,7 +31,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<TodoList> TodoLists => Set<TodoList>();
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
-
+    public DbSet<Person> People => Set<Person>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<WorkOrder> WorkOrders => Set<WorkOrder>();
@@ -42,6 +43,12 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(builder);
+
+        builder.Entity<Person>()
+            .HasDiscriminator<int>("PersonType")
+            .HasValue<Person>(0)
+            .HasValue<Customer>(1)
+            .HasValue<Employee>(2);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
