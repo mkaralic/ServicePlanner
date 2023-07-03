@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServicePlanner.Application.Common.Models;
 using ServicePlanner.Application.Employees.Commands.CreateEmployee;
+using ServicePlanner.Application.Employees.Commands.UpdateEmployee;
 using ServicePlanner.Application.TodoItems.Commands.CreateTodoItem;
 using ServicePlanner.Application.TodoItems.Commands.DeleteTodoItem;
 using ServicePlanner.Application.TodoItems.Commands.UpdateTodoItem;

@@ -292,8 +292,9 @@ export class WorkOrderClient implements IWorkOrderClient {
 
 export interface IEmployeesClient {
     create(command: CreateEmployeeCommand): Observable<number>;
-    getEmployeesWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfEmployeeBriefDto>;
-    update(id: number, command: UpdateTodoItemCommand): Observable<FileResponse>;
+    getEmployeesWithPagination(name: string | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfEmployeeBriefDto>;
+    getEmployee(id: number): Observable<FileResponse>;
+    update(id: number, command: UpdateEmployeeCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
 }
 
@@ -363,12 +364,10 @@ export class EmployeesClient implements IEmployeesClient {
         return _observableOf(null as any);
     }
 
-    getEmployeesWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfEmployeeBriefDto> {
+    getEmployeesWithPagination(name: string | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfEmployeeBriefDto> {
         let url_ = this.baseUrl + "/api/Employees?";
-        if (listId === null)
-            throw new Error("The parameter 'listId' cannot be null.");
-        else if (listId !== undefined)
-            url_ += "ListId=" + encodeURIComponent("" + listId) + "&";
+        if (name !== undefined && name !== null)
+            url_ += "Name=" + encodeURIComponent("" + name) + "&";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
         else if (pageNumber !== undefined)
@@ -423,7 +422,62 @@ export class EmployeesClient implements IEmployeesClient {
         return _observableOf(null as any);
     }
 
-    update(id: number, command: UpdateTodoItemCommand): Observable<FileResponse> {
+    getEmployee(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Employees/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEmployee(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetEmployee(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processGetEmployee(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    update(id: number, command: UpdateEmployeeCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Employees/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1338,7 +1392,7 @@ export interface IPaginatedListOfEmployeeBriefDto {
 
 export class EmployeeBriefDto implements IEmployeeBriefDto {
     id?: number;
-    fullName?: number;
+    fullName?: string | undefined;
 
     constructor(data?: IEmployeeBriefDto) {
         if (data) {
@@ -1373,15 +1427,20 @@ export class EmployeeBriefDto implements IEmployeeBriefDto {
 
 export interface IEmployeeBriefDto {
     id?: number;
-    fullName?: number;
+    fullName?: string | undefined;
 }
 
-export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
+export class UpdateEmployeeCommand implements IUpdateEmployeeCommand {
     id?: number;
-    title?: string | undefined;
-    done?: boolean;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    phone?: string | undefined;
+    address?: string | undefined;
+    city?: string | undefined;
+    country?: string | undefined;
+    notes?: string | undefined;
 
-    constructor(data?: IUpdateTodoItemCommand) {
+    constructor(data?: IUpdateEmployeeCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1393,14 +1452,19 @@ export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.title = _data["title"];
-            this.done = _data["done"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phone = _data["phone"];
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.country = _data["country"];
+            this.notes = _data["notes"];
         }
     }
 
-    static fromJS(data: any): UpdateTodoItemCommand {
+    static fromJS(data: any): UpdateEmployeeCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoItemCommand();
+        let result = new UpdateEmployeeCommand();
         result.init(data);
         return result;
     }
@@ -1408,16 +1472,26 @@ export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["title"] = this.title;
-        data["done"] = this.done;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phone"] = this.phone;
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["country"] = this.country;
+        data["notes"] = this.notes;
         return data;
     }
 }
 
-export interface IUpdateTodoItemCommand {
+export interface IUpdateEmployeeCommand {
     id?: number;
-    title?: string | undefined;
-    done?: boolean;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    phone?: string | undefined;
+    address?: string | undefined;
+    city?: string | undefined;
+    country?: string | undefined;
+    notes?: string | undefined;
 }
 
 export class PaginatedListOfTodoItemBriefDto implements IPaginatedListOfTodoItemBriefDto {
@@ -1570,6 +1644,50 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
 export interface ICreateTodoItemCommand {
     listId?: number;
     title?: string | undefined;
+}
+
+export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
+    id?: number;
+    title?: string | undefined;
+    done?: boolean;
+
+    constructor(data?: IUpdateTodoItemCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.done = _data["done"];
+        }
+    }
+
+    static fromJS(data: any): UpdateTodoItemCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateTodoItemCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["done"] = this.done;
+        return data;
+    }
+}
+
+export interface IUpdateTodoItemCommand {
+    id?: number;
+    title?: string | undefined;
+    done?: boolean;
 }
 
 export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand {

@@ -186,11 +186,11 @@
         "operationId": "Employees_GetEmployeesWithPagination",
         "parameters": [
           {
-            "name": "ListId",
+            "name": "Name",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             },
             "x-position": 1
           },
@@ -233,6 +233,42 @@
       }
     },
     "/api/Employees/{id}": {
+      "get": {
+        "tags": [
+          "Employees"
+        ],
+        "operationId": "Employees_GetEmployee",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
       "put": {
         "tags": [
           "Employees"
@@ -255,7 +291,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTodoItemCommand"
+                "$ref": "#/components/schemas/UpdateEmployeeCommand"
               }
             }
           },
@@ -826,12 +862,12 @@
             "format": "int32"
           },
           "fullName": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           }
         }
       },
-      "UpdateTodoItemCommand": {
+      "UpdateEmployeeCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -839,12 +875,33 @@
             "type": "integer",
             "format": "int32"
           },
-          "title": {
+          "firstName": {
             "type": "string",
             "nullable": true
           },
-          "done": {
-            "type": "boolean"
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -911,6 +968,23 @@
           "title": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "UpdateTodoItemCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "done": {
+            "type": "boolean"
           }
         }
       },

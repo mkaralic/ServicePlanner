@@ -5,9 +5,6 @@ public class GetEmployeesWithPaginationQueryValidator : AbstractValidator<GetEmp
 {
     public GetEmployeesWithPaginationQueryValidator()
     {
-        RuleFor(x => x.ListId)
-            .NotEmpty().WithMessage("ListId is required.");
-
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1).WithMessage("PageNumber at least greater than or equal to 1.");
 

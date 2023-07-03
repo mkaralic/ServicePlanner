@@ -8,7 +8,7 @@ using ServicePlanner.Application.Common.Models;
 namespace ServicePlanner.Application.Employees.Queries.GetEmployeesWithPagination;
 public record GetEmployeesWithPaginationQuery : IRequest<PaginatedList<EmployeeBriefDto>>
 {
-    public int ListId { get; init; }
+    public string Name { get; set; }
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;
 }
@@ -27,6 +27,7 @@ public class GetEmployeesWithPaginationQueryHandler : IRequestHandler<GetEmploye
     public async Task<PaginatedList<EmployeeBriefDto>> Handle(GetEmployeesWithPaginationQuery request, CancellationToken cancellationToken)
     {
         return await _context.Employees
+            .Where(x => string.IsNullOrEmpty(request.Name) || x.FirstName.Contains(request.Name) || x.LastName.Contains(request.Name))
             .OrderBy(x => x.FirstName)
             .ProjectTo<EmployeeBriefDto>(_mapper.ConfigurationProvider)
             .PaginatedListAsync(request.PageNumber, request.PageSize);
