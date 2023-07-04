@@ -14,6 +14,8 @@ public record CreateWorkOrderCommand : IRequest<int>
     public int? CustomerId { get; set; }
     public int? EmployeeId { get; set; }
     public string? Notes { get; set; }
+    public string ServiceDescription { get; set; }
+    public decimal Total { get; set; }
 }
 
 public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderCommand, int>
@@ -32,6 +34,8 @@ public class CreateWorkOrderCommandHandler : IRequestHandler<CreateWorkOrderComm
             WorkOrderStatusId = request.WorkOrderStatusId,
             CustomerId = request.CustomerId,
             EmployeeId = request.EmployeeId,
+            ServiceDescription = request.ServiceDescription,
+            Total = request.Total,
             Notes = request.Notes
         };
 

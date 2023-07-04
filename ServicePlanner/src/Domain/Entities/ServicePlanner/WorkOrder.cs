@@ -15,11 +15,11 @@ public class WorkOrder : BaseAuditableEntity
     public int? EmployeeId { get; set; }
     public Employee Employee { get; set; }
 
-    [MaxLength(50)]
+    [MaxLength(250)]
     public string ServiceDescription { get; set; }
 
     [Column(TypeName = "decimal(18, 2)")] 
-    public decimal Total { get; set; }
+    public decimal? Total { get; set; }
 
     [Column(TypeName = "Text")]
     public string? Notes { get; set; }

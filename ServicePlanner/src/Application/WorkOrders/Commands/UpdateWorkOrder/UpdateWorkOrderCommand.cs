@@ -11,6 +11,8 @@ public record UpdateWorkOrderCommand : IRequest
     public int WorkOrderStatusId { get; set; }
     public int? CustomerId { get; set; }
     public int? EmployeeId { get; set; }
+    public string ServiceDescription { get; set; }
+    public decimal? Total { get; set; }
     public string? Notes { get; set; }
 }
 
@@ -33,8 +35,8 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
             throw new NotFoundException(nameof(WorkOrder), request.Id);
         }
 
-        (entity.WorkOrderStatusId, entity.CustomerId, entity.EmployeeId, entity.Notes)
-            = (request.WorkOrderStatusId, request.CustomerId, request.EmployeeId, request.Notes);
+        (entity.WorkOrderStatusId, entity.CustomerId, entity.EmployeeId, entity.ServiceDescription, entity.Total, entity.Notes)
+            = (request.WorkOrderStatusId, request.CustomerId, request.EmployeeId, entity.ServiceDescription, entity.Total, request.Notes);
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -9,7 +9,7 @@ public class WorkOrderBriefDto : IMapFrom<WorkOrder>
     public DateTime Created { get; set; }
     public string Customer { get; set; }
     public string ServiceDescription { get; set; }
-    public decimal Total { get; set; }
+    public decimal? Total { get; set; }
     public string Status { get; set; }
 
     public void Mapping(Profile profile)
