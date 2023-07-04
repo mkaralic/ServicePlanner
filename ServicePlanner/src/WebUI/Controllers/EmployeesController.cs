@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServicePlanner.Application.Common.Models;
-using ServicePlanner.Application.Customers.Commands.CreateCustomer;
 using ServicePlanner.Application.Employees.Commands.CreateEmployee;
 using ServicePlanner.Application.Employees.Commands.DeleteEmployee;
 using ServicePlanner.Application.Employees.Commands.UpdateEmployee;
 using ServicePlanner.Application.Employees.Queries.GetEmployee;
 using ServicePlanner.Application.Employees.Queries.GetEmployeesWithPagination;
-using ServicePlanner.Application.TodoItems.Commands.CreateTodoItem;
-using ServicePlanner.Application.TodoItems.Commands.DeleteTodoItem;
-using ServicePlanner.Application.TodoItems.Commands.UpdateTodoItem;
-using ServicePlanner.Application.TodoItems.Commands.UpdateTodoItemDetail;
-using ServicePlanner.Domain.Entities.ServicePlanner;
+using ServicePlanner.Application.WorkOrders.Commands.UpdateWorkOrder;
+using ServicePlanner.Application.WorkOrders.Queries.GetWorkOrdersWithPagination;
 
 namespace ServicePlanner.WebUI.Controllers;
 [Authorize]

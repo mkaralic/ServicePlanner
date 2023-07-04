@@ -25,7 +25,7 @@ public class CustomersController : ApiControllerBase
     }
 
     [HttpGet("{id}", Name = "NameForGetCustomerEndpoint")]
-    public async Task<ActionResult> GetCustomer(int id)
+    public async Task<ActionResult> GetCustomer(int id) 
     {
         var command = new GetCustomerQuery() { Id = id };
         var result = await Mediator.Send(command);

@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 
 namespace ServicePlanner.Application.Employees.Commands.CreateEmployee;
-public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCommand>
+public class CreateWorkOrderCommandValidator : AbstractValidator<CreateEmployeeCommand>
 {
-    public CreateEmployeeCommandValidator()
+    public CreateWorkOrderCommandValidator()
     {
         RuleFor(v => v.FirstName)
             .MaximumLength(30)
