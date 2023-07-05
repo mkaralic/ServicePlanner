@@ -36,7 +36,7 @@ public class UpdateWorkOrderCommandHandler : IRequestHandler<UpdateWorkOrderComm
         }
 
         (entity.WorkOrderStatusId, entity.CustomerId, entity.EmployeeId, entity.ServiceDescription, entity.Total, entity.Notes)
-            = (request.WorkOrderStatusId, request.CustomerId, request.EmployeeId, entity.ServiceDescription, entity.Total, request.Notes);
+            = (request.WorkOrderStatusId, request.CustomerId, request.EmployeeId, request.ServiceDescription, request.Total, request.Notes);
 
         await _context.SaveChangesAsync(cancellationToken);
 

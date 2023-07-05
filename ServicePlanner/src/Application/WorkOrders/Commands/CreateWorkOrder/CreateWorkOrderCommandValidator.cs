@@ -12,8 +12,7 @@ public class CreateWorkOrderCommandValidator : AbstractValidator<CreateWorkOrder
         _context = context;
 
         RuleFor(v => v.WorkOrderStatusId)
-            .Must(id => _context.WorkOrderStatuses.Any(wos => wos.Id == id)).WithMessage("Status doesn't exist.")
-            .NotEmpty().WithMessage("Status is required.");
+            .Must(id => _context.WorkOrderStatuses.Any(wos => wos.Id == id)).WithMessage("Status doesn't exist.");
 
         // check if customerId is not null, then it must exist in customers
         RuleFor(x => x.CustomerId)

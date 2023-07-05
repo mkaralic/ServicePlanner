@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ServicePlanner.Application.Common.Interfaces;
 using ServicePlanner.Application.Common.Mappings;
 using ServicePlanner.Application.Common.Models;
@@ -27,7 +28,9 @@ public class GetWorkOrderQueryHandler : IRequestHandler<GetWorkOrderQuery, WorkO
     public async Task<WorkOrder> Handle(GetWorkOrderQuery request, CancellationToken cancellationToken)
     {
         var entity = await _context.WorkOrders
-            .FindAsync(new object[] { request.Id }, cancellationToken);
+            .Include(wo => wo.WorkOrderStatus).Include(wo => wo.Customer).Include(wo => wo.Employee)
+            .Where(wo => wo.Id == request.Id).SingleAsync();
+            //.FindAsync(new object[] { request.Id }, cancellationToken);
 
         return entity;
     }

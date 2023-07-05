@@ -1,4 +1,5 @@
-﻿using FluentValidation.AspNetCore;
+﻿using System.Text.Json.Serialization;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using NSwag;
 using NSwag.Generation.Processors.Security;
@@ -23,7 +24,12 @@ public static class ConfigureServices
 
         services.AddControllersWithViews(options =>
             options.Filters.Add<ApiExceptionFilterAttribute>())
-                .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
+                .AddFluentValidation(x => x.AutomaticValidationEnabled = false)
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                });
+        ;
 
         services.AddRazorPages();
 

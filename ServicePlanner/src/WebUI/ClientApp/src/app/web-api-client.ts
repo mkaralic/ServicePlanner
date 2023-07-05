@@ -15,18 +15,18 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
-export interface IWorkOrderClient {
-    getAll(): Observable<string[]>;
-    post(value: string): Observable<void>;
-    get(id: number): Observable<string>;
-    put(id: number, value: string): Observable<void>;
-    delete(id: number): Observable<void>;
+export interface IWorkOrdersClient {
+    create(command: CreateWorkOrderCommand): Observable<number>;
+    getWorkOrdersWithPagination(name: string | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfWorkOrderBriefDto>;
+    getWorkOrder(id: number): Observable<FileResponse>;
+    update(id: number, command: UpdateWorkOrderCommand): Observable<FileResponse>;
+    delete(id: number): Observable<FileResponse>;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class WorkOrderClient implements IWorkOrderClient {
+export class WorkOrdersClient implements IWorkOrdersClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -36,66 +36,11 @@ export class WorkOrderClient implements IWorkOrderClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getAll(): Observable<string[]> {
-        let url_ = this.baseUrl + "/api/WorkOrder";
+    create(command: CreateWorkOrderCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/WorkOrders";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetAll(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<string[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<string[]>;
-        }));
-    }
-
-    protected processGetAll(response: HttpResponseBase): Observable<string[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(item);
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    post(value: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/WorkOrder";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(value);
+        const content_ = JSON.stringify(command);
 
         let options_ : any = {
             body: content_,
@@ -103,72 +48,25 @@ export class WorkOrderClient implements IWorkOrderClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPost(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processPost(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processPost(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    get(id: number): Observable<string> {
-        let url_ = this.baseUrl + "/api/WorkOrder/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGet(response_ as any);
+                    return this.processCreate(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<string>;
+                    return _observableThrow(e) as any as Observable<number>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<string>;
+                return _observableThrow(response_) as any as Observable<number>;
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -191,39 +89,43 @@ export class WorkOrderClient implements IWorkOrderClient {
         return _observableOf(null as any);
     }
 
-    put(id: number, value: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/WorkOrder/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    getWorkOrdersWithPagination(name: string | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfWorkOrderBriefDto> {
+        let url_ = this.baseUrl + "/api/WorkOrders?";
+        if (name !== undefined && name !== null)
+            url_ += "Name=" + encodeURIComponent("" + name) + "&";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(value);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPut(response_);
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWorkOrdersWithPagination(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processPut(response_ as any);
+                    return this.processGetWorkOrdersWithPagination(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PaginatedListOfWorkOrderBriefDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PaginatedListOfWorkOrderBriefDto>;
         }));
     }
 
-    protected processPut(response: HttpResponseBase): Observable<void> {
+    protected processGetWorkOrdersWithPagination(response: HttpResponseBase): Observable<PaginatedListOfWorkOrderBriefDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -232,7 +134,10 @@ export class WorkOrderClient implements IWorkOrderClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedListOfWorkOrderBriefDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -242,8 +147,8 @@ export class WorkOrderClient implements IWorkOrderClient {
         return _observableOf(null as any);
     }
 
-    delete(id: number): Observable<void> {
-        let url_ = this.baseUrl + "/api/WorkOrder/{id}";
+    getWorkOrder(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/WorkOrders/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -253,6 +158,121 @@ export class WorkOrderClient implements IWorkOrderClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWorkOrder(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWorkOrder(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processGetWorkOrder(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    update(id: number, command: UpdateWorkOrderCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/WorkOrders/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    delete(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/WorkOrders/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -263,24 +283,31 @@ export class WorkOrderClient implements IWorkOrderClient {
                 try {
                     return this.processDelete(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<FileResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<FileResponse>;
         }));
     }
 
-    protected processDelete(response: HttpResponseBase): Observable<void> {
+    protected processDelete(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1566,6 +1593,242 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         }
         return _observableOf(null as any);
     }
+}
+
+export class CreateWorkOrderCommand implements ICreateWorkOrderCommand {
+    workOrderStatusId?: number;
+    customerId?: number | undefined;
+    employeeId?: number | undefined;
+    notes?: string | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+
+    constructor(data?: ICreateWorkOrderCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.workOrderStatusId = _data["workOrderStatusId"];
+            this.customerId = _data["customerId"];
+            this.employeeId = _data["employeeId"];
+            this.notes = _data["notes"];
+            this.serviceDescription = _data["serviceDescription"];
+            this.total = _data["total"];
+        }
+    }
+
+    static fromJS(data: any): CreateWorkOrderCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateWorkOrderCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workOrderStatusId"] = this.workOrderStatusId;
+        data["customerId"] = this.customerId;
+        data["employeeId"] = this.employeeId;
+        data["notes"] = this.notes;
+        data["serviceDescription"] = this.serviceDescription;
+        data["total"] = this.total;
+        return data;
+    }
+}
+
+export interface ICreateWorkOrderCommand {
+    workOrderStatusId?: number;
+    customerId?: number | undefined;
+    employeeId?: number | undefined;
+    notes?: string | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+}
+
+export class PaginatedListOfWorkOrderBriefDto implements IPaginatedListOfWorkOrderBriefDto {
+    items?: WorkOrderBriefDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfWorkOrderBriefDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(WorkOrderBriefDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfWorkOrderBriefDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfWorkOrderBriefDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data;
+    }
+}
+
+export interface IPaginatedListOfWorkOrderBriefDto {
+    items?: WorkOrderBriefDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+}
+
+export class WorkOrderBriefDto implements IWorkOrderBriefDto {
+    id?: number;
+    created?: Date;
+    customer?: string | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+    status?: string | undefined;
+
+    constructor(data?: IWorkOrderBriefDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.customer = _data["customer"];
+            this.serviceDescription = _data["serviceDescription"];
+            this.total = _data["total"];
+            this.status = _data["status"];
+        }
+    }
+
+    static fromJS(data: any): WorkOrderBriefDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkOrderBriefDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["customer"] = this.customer;
+        data["serviceDescription"] = this.serviceDescription;
+        data["total"] = this.total;
+        data["status"] = this.status;
+        return data;
+    }
+}
+
+export interface IWorkOrderBriefDto {
+    id?: number;
+    created?: Date;
+    customer?: string | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+    status?: string | undefined;
+}
+
+export class UpdateWorkOrderCommand implements IUpdateWorkOrderCommand {
+    id?: number;
+    workOrderStatusId?: number;
+    customerId?: number | undefined;
+    employeeId?: number | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+    notes?: string | undefined;
+
+    constructor(data?: IUpdateWorkOrderCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.workOrderStatusId = _data["workOrderStatusId"];
+            this.customerId = _data["customerId"];
+            this.employeeId = _data["employeeId"];
+            this.serviceDescription = _data["serviceDescription"];
+            this.total = _data["total"];
+            this.notes = _data["notes"];
+        }
+    }
+
+    static fromJS(data: any): UpdateWorkOrderCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateWorkOrderCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["workOrderStatusId"] = this.workOrderStatusId;
+        data["customerId"] = this.customerId;
+        data["employeeId"] = this.employeeId;
+        data["serviceDescription"] = this.serviceDescription;
+        data["total"] = this.total;
+        data["notes"] = this.notes;
+        return data;
+    }
+}
+
+export interface IUpdateWorkOrderCommand {
+    id?: number;
+    workOrderStatusId?: number;
+    customerId?: number | undefined;
+    employeeId?: number | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+    notes?: string | undefined;
 }
 
 export class CreateCustomerCommand implements ICreateCustomerCommand {

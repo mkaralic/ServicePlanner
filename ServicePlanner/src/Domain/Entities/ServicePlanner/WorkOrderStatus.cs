@@ -16,5 +16,5 @@ public class WorkOrderStatus
     [MaxLength(250)]
     public string Description { get; set; }
 
-    public IEnumerable<WorkOrder> WorkOrders { get; set; } = Enumerable.Empty<WorkOrder>();
+    public IEnumerable<WorkOrder> WorkOrders { get; set; } = null!;
 }

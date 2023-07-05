@@ -12,8 +12,7 @@ public class UpdateWorkOrderCommandValidator : AbstractValidator<UpdateWorkOrder
         _context = context;
 
         RuleFor(v => v.WorkOrderStatusId)
-            .Must(id => _context.WorkOrderStatuses.Any(wos => wos.Id == id)).WithMessage("Status doesn't exist.")
-            .NotEmpty().WithMessage("Status is required.");
+            .Must(id => _context.WorkOrderStatuses.Any(wos => wos.Id == id)).WithMessage("Status doesn't exist.");
 
         // check if customerId is not null, then it must exist in customers
         RuleFor(x => x.CustomerId)
@@ -21,6 +20,6 @@ public class UpdateWorkOrderCommandValidator : AbstractValidator<UpdateWorkOrder
 
         // check if WorkOrderId is not null, then it must exist in WorkOrders
         RuleFor(x => x.EmployeeId)
-            .Must(employeeId => !employeeId.HasValue || _context.Customers.Any(c => c.Id == employeeId)).WithMessage("Employee doesn't exist.");
+            .Must(employeeId => !employeeId.HasValue || _context.Employees.Any(c => c.Id == employeeId)).WithMessage("Employee doesn't exist.");
     }
 }

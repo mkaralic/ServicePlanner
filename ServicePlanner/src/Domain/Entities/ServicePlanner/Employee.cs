@@ -4,5 +4,5 @@ namespace ServicePlanner.Domain.Entities.ServicePlanner;
 
 public class Employee : Person
 {
-    public IEnumerable<WorkOrder> WorkOrders { get; set; } = Enumerable.Empty<WorkOrder>();
+    public IEnumerable<WorkOrder> WorkOrders { get; set; } = null!;
 }
