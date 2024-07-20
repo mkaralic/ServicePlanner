@@ -26,7 +26,7 @@ import { CustomersListComponent } from './customers/customers-list/customers-lis
 import { WorkOrdersComponent } from './work-orders/work-orders/work-orders.component';
 import { WorkOrdersListComponent } from './work-orders/work-orders-list/work-orders-list.component';
 import { WorkOrderComponent } from './work-orders/work-order/work-order.component';
-
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +53,8 @@ import { WorkOrderComponent } from './work-orders/work-order/work-order.componen
     ApiAuthorizationModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    PaginationModule.forRoot()
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }

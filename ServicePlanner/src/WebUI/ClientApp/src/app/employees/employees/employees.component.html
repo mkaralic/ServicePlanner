@@ -1,1 +1,37 @@
-<p>employees works!</p>
+<div class="container mt-5">
+  <h2>Employees</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <!-- <th>Ime</th>
+          <th>Prezime</th>
+          <th>Telefon</th>
+          <th>Adresa</th>
+          <th>Grad</th>
+          <th>Država</th> -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let employee of employees">
+        <td>{{ employee.id }}</td>
+        <td>{{ employee.fullName }}</td>
+        <!-- <td>{{ employee.firstName }}</td>
+        <td>{{ employee.lastName }}</td>
+        <td>{{ employee.phone }}</td>
+        <td>{{ employee.address }}</td>
+        <td>{{ employee.city }}</td>
+        <td>{{ employee.country }}</td> -->
+      </tr>
+    </tbody>
+  </table>
+  <pagination
+    [totalItems]="totalItems"
+    [(ngModel)]="currentPage"
+    [itemsPerPage]="itemsPerPage"
+    (pageChanged)="onPageChange($event)"
+    class="d-flex justify-content-center mt-3"
+  >
+  </pagination>
+</div>

@@ -54,10 +54,15 @@ public class ApplicationDbContextInitialiser
     {
         // Default roles
         var administratorRole = new IdentityRole("Administrator");
+        var dispatcherRole = new IdentityRole("Dispatcher");
 
         if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
         {
             await _roleManager.CreateAsync(administratorRole);
+        }
+        if (_roleManager.Roles.All(r => r.Name != dispatcherRole.Name))
+        {
+            await _roleManager.CreateAsync(dispatcherRole);
         }
 
         // Default users
