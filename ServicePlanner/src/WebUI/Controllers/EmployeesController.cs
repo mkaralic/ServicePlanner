@@ -8,13 +8,14 @@ using ServicePlanner.Application.Employees.Queries.GetEmployee;
 using ServicePlanner.Application.Employees.Queries.GetEmployeesWithPagination;
 using ServicePlanner.Application.WorkOrders.Commands.UpdateWorkOrder;
 using ServicePlanner.Application.WorkOrders.Queries.GetWorkOrdersWithPagination;
+using ServicePlanner.Domain.Entities.ServicePlanner;
 
 namespace ServicePlanner.WebUI.Controllers;
 [Authorize]
 public class EmployeesController : ApiControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<int>> Create(CreateEmployeeCommand command)
+    public async Task<ActionResult<int>> CreateEmployee(CreateEmployeeCommand command)
     {
         var result = await Mediator.Send(command);
         return CreatedAtRoute($"NameForGetEmployeeEndpoint", new { id = result }, result);
@@ -27,7 +28,7 @@ public class EmployeesController : ApiControllerBase
     }
 
     [HttpGet("{id}", Name = "NameForGetEmployeeEndpoint")]
-    public async Task<ActionResult> GetEmployee(int id)
+    public async Task<ActionResult<Employee>> GetEmployee(int id)
     {
         var command = new GetEmployeeQuery() { Id = id };
         var result = await Mediator.Send(command);
@@ -35,7 +36,7 @@ public class EmployeesController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateEmployeeCommand command)
+    public async Task<ActionResult> UpdateEmployee(int id, UpdateEmployeeCommand command)
     {
         if (id != command.Id)
         {
@@ -48,7 +49,7 @@ public class EmployeesController : ApiControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public async Task<ActionResult> DeleteEmployee(int id)
     {
         await Mediator.Send(new DeleteEmployeeCommand(id));
 

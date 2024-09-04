@@ -1,0 +1,11 @@
+/* Styling for invalid form fields */
+.is-invalid {
+    border-color: #dc3545; /* Bootstrap's red color for invalid fields */
+  }
+  
+  .invalid-feedback {
+    color: #dc3545;
+    display: block;
+    margin-top: 5px;
+    font-size: 0.875em;
+  }

@@ -620,11 +620,11 @@ export class CustomersClient implements ICustomersClient {
 }
 
 export interface IEmployeesClient {
-    create(command: CreateEmployeeCommand): Observable<number>;
+    createEmployee(command: CreateEmployeeCommand): Observable<number>;
     getEmployeesWithPagination(name: string | null | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfEmployeeBriefDto>;
-    getEmployee(id: number): Observable<FileResponse>;
-    update(id: number, command: UpdateEmployeeCommand): Observable<FileResponse>;
-    delete(id: number): Observable<FileResponse>;
+    getEmployee(id: number): Observable<Employee>;
+    updateEmployee(id: number, command: UpdateEmployeeCommand): Observable<FileResponse>;
+    deleteEmployee(id: number): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -640,7 +640,7 @@ export class EmployeesClient implements IEmployeesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    create(command: CreateEmployeeCommand): Observable<number> {
+    createEmployee(command: CreateEmployeeCommand): Observable<number> {
         let url_ = this.baseUrl + "/api/Employees";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -657,11 +657,11 @@ export class EmployeesClient implements IEmployeesClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreate(response_);
+            return this.processCreateEmployee(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreate(response_ as any);
+                    return this.processCreateEmployee(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<number>;
                 }
@@ -670,7 +670,7 @@ export class EmployeesClient implements IEmployeesClient {
         }));
     }
 
-    protected processCreate(response: HttpResponseBase): Observable<number> {
+    protected processCreateEmployee(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -751,7 +751,7 @@ export class EmployeesClient implements IEmployeesClient {
         return _observableOf(null as any);
     }
 
-    getEmployee(id: number): Observable<FileResponse> {
+    getEmployee(id: number): Observable<Employee> {
         let url_ = this.baseUrl + "/api/Employees/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -762,7 +762,7 @@ export class EmployeesClient implements IEmployeesClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             })
         };
 
@@ -773,31 +773,27 @@ export class EmployeesClient implements IEmployeesClient {
                 try {
                     return this.processGetEmployee(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
+                    return _observableThrow(e) as any as Observable<Employee>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
+                return _observableThrow(response_) as any as Observable<Employee>;
         }));
     }
 
-    protected processGetEmployee(response: HttpResponseBase): Observable<FileResponse> {
+    protected processGetEmployee(response: HttpResponseBase): Observable<Employee> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Employee.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -806,7 +802,7 @@ export class EmployeesClient implements IEmployeesClient {
         return _observableOf(null as any);
     }
 
-    update(id: number, command: UpdateEmployeeCommand): Observable<FileResponse> {
+    updateEmployee(id: number, command: UpdateEmployeeCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Employees/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -826,11 +822,11 @@ export class EmployeesClient implements IEmployeesClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdate(response_);
+            return this.processUpdateEmployee(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdate(response_ as any);
+                    return this.processUpdateEmployee(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse>;
                 }
@@ -839,7 +835,7 @@ export class EmployeesClient implements IEmployeesClient {
         }));
     }
 
-    protected processUpdate(response: HttpResponseBase): Observable<FileResponse> {
+    protected processUpdateEmployee(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -865,7 +861,7 @@ export class EmployeesClient implements IEmployeesClient {
         return _observableOf(null as any);
     }
 
-    delete(id: number): Observable<FileResponse> {
+    deleteEmployee(id: number): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Employees/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -881,11 +877,11 @@ export class EmployeesClient implements IEmployeesClient {
         };
 
         return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDelete(response_);
+            return this.processDeleteEmployee(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processDelete(response_ as any);
+                    return this.processDeleteEmployee(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse>;
                 }
@@ -894,7 +890,7 @@ export class EmployeesClient implements IEmployeesClient {
         }));
     }
 
-    protected processDelete(response: HttpResponseBase): Observable<FileResponse> {
+    protected processDeleteEmployee(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2221,6 +2217,434 @@ export class EmployeeBriefDto implements IEmployeeBriefDto {
 export interface IEmployeeBriefDto {
     id?: number;
     fullName?: string | undefined;
+}
+
+export abstract class BaseEntity implements IBaseEntity {
+    id?: number;
+    domainEvents?: BaseEvent[] | undefined;
+
+    constructor(data?: IBaseEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["domainEvents"])) {
+                this.domainEvents = [] as any;
+                for (let item of _data["domainEvents"])
+                    this.domainEvents!.push(BaseEvent.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BaseEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.domainEvents)) {
+            data["domainEvents"] = [];
+            for (let item of this.domainEvents)
+                data["domainEvents"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IBaseEntity {
+    id?: number;
+    domainEvents?: BaseEvent[] | undefined;
+}
+
+export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+
+    constructor(data?: IBaseAuditableEntity) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+        }
+    }
+
+    static override fromJS(data: any): BaseAuditableEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IBaseAuditableEntity extends IBaseEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+}
+
+export abstract class Person extends BaseAuditableEntity implements IPerson {
+    firstName!: string;
+    lastName?: string | undefined;
+    phone?: string | undefined;
+    address?: string | undefined;
+    city?: string | undefined;
+    country?: string | undefined;
+    notes?: string | undefined;
+
+    constructor(data?: IPerson) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phone = _data["phone"];
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.country = _data["country"];
+            this.notes = _data["notes"];
+        }
+    }
+
+    static override fromJS(data: any): Person {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'Person' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phone"] = this.phone;
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["country"] = this.country;
+        data["notes"] = this.notes;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IPerson extends IBaseAuditableEntity {
+    firstName: string;
+    lastName?: string | undefined;
+    phone?: string | undefined;
+    address?: string | undefined;
+    city?: string | undefined;
+    country?: string | undefined;
+    notes?: string | undefined;
+}
+
+export class Employee extends Person implements IEmployee {
+    workOrders?: WorkOrder[] | undefined;
+
+    constructor(data?: IEmployee) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["workOrders"])) {
+                this.workOrders = [] as any;
+                for (let item of _data["workOrders"])
+                    this.workOrders!.push(WorkOrder.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): Employee {
+        data = typeof data === 'object' ? data : {};
+        let result = new Employee();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.workOrders)) {
+            data["workOrders"] = [];
+            for (let item of this.workOrders)
+                data["workOrders"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IEmployee extends IPerson {
+    workOrders?: WorkOrder[] | undefined;
+}
+
+export class WorkOrder extends BaseAuditableEntity implements IWorkOrder {
+    workOrderStatusId?: number;
+    workOrderStatus?: WorkOrderStatus | undefined;
+    workOrderStatusHistoryItems?: WorkOrderStatusHistory[] | undefined;
+    customerId?: number | undefined;
+    customer?: Customer | undefined;
+    employeeId?: number | undefined;
+    employee?: Employee | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+    notes?: string | undefined;
+
+    constructor(data?: IWorkOrder) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workOrderStatusId = _data["workOrderStatusId"];
+            this.workOrderStatus = _data["workOrderStatus"] ? WorkOrderStatus.fromJS(_data["workOrderStatus"]) : <any>undefined;
+            if (Array.isArray(_data["workOrderStatusHistoryItems"])) {
+                this.workOrderStatusHistoryItems = [] as any;
+                for (let item of _data["workOrderStatusHistoryItems"])
+                    this.workOrderStatusHistoryItems!.push(WorkOrderStatusHistory.fromJS(item));
+            }
+            this.customerId = _data["customerId"];
+            this.customer = _data["customer"] ? Customer.fromJS(_data["customer"]) : <any>undefined;
+            this.employeeId = _data["employeeId"];
+            this.employee = _data["employee"] ? Employee.fromJS(_data["employee"]) : <any>undefined;
+            this.serviceDescription = _data["serviceDescription"];
+            this.total = _data["total"];
+            this.notes = _data["notes"];
+        }
+    }
+
+    static override fromJS(data: any): WorkOrder {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkOrder();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workOrderStatusId"] = this.workOrderStatusId;
+        data["workOrderStatus"] = this.workOrderStatus ? this.workOrderStatus.toJSON() : <any>undefined;
+        if (Array.isArray(this.workOrderStatusHistoryItems)) {
+            data["workOrderStatusHistoryItems"] = [];
+            for (let item of this.workOrderStatusHistoryItems)
+                data["workOrderStatusHistoryItems"].push(item.toJSON());
+        }
+        data["customerId"] = this.customerId;
+        data["customer"] = this.customer ? this.customer.toJSON() : <any>undefined;
+        data["employeeId"] = this.employeeId;
+        data["employee"] = this.employee ? this.employee.toJSON() : <any>undefined;
+        data["serviceDescription"] = this.serviceDescription;
+        data["total"] = this.total;
+        data["notes"] = this.notes;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IWorkOrder extends IBaseAuditableEntity {
+    workOrderStatusId?: number;
+    workOrderStatus?: WorkOrderStatus | undefined;
+    workOrderStatusHistoryItems?: WorkOrderStatusHistory[] | undefined;
+    customerId?: number | undefined;
+    customer?: Customer | undefined;
+    employeeId?: number | undefined;
+    employee?: Employee | undefined;
+    serviceDescription?: string | undefined;
+    total?: number | undefined;
+    notes?: string | undefined;
+}
+
+export class WorkOrderStatus implements IWorkOrderStatus {
+    id?: number;
+    name?: string | undefined;
+    description?: string | undefined;
+    workOrders?: WorkOrder[] | undefined;
+
+    constructor(data?: IWorkOrderStatus) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            if (Array.isArray(_data["workOrders"])) {
+                this.workOrders = [] as any;
+                for (let item of _data["workOrders"])
+                    this.workOrders!.push(WorkOrder.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WorkOrderStatus {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkOrderStatus();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        if (Array.isArray(this.workOrders)) {
+            data["workOrders"] = [];
+            for (let item of this.workOrders)
+                data["workOrders"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWorkOrderStatus {
+    id?: number;
+    name?: string | undefined;
+    description?: string | undefined;
+    workOrders?: WorkOrder[] | undefined;
+}
+
+export class WorkOrderStatusHistory extends BaseAuditableEntity implements IWorkOrderStatusHistory {
+    workOrderId?: number;
+    workOrder?: WorkOrder | undefined;
+    workOrderStatusId?: number;
+
+    constructor(data?: IWorkOrderStatusHistory) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workOrderId = _data["workOrderId"];
+            this.workOrder = _data["workOrder"] ? WorkOrder.fromJS(_data["workOrder"]) : <any>undefined;
+            this.workOrderStatusId = _data["workOrderStatusId"];
+        }
+    }
+
+    static override fromJS(data: any): WorkOrderStatusHistory {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkOrderStatusHistory();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workOrderId"] = this.workOrderId;
+        data["workOrder"] = this.workOrder ? this.workOrder.toJSON() : <any>undefined;
+        data["workOrderStatusId"] = this.workOrderStatusId;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IWorkOrderStatusHistory extends IBaseAuditableEntity {
+    workOrderId?: number;
+    workOrder?: WorkOrder | undefined;
+    workOrderStatusId?: number;
+}
+
+export abstract class BaseEvent implements IBaseEvent {
+
+    constructor(data?: IBaseEvent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): BaseEvent {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IBaseEvent {
+}
+
+export class Customer extends Person implements ICustomer {
+    workOrders?: WorkOrder[] | undefined;
+
+    constructor(data?: ICustomer) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["workOrders"])) {
+                this.workOrders = [] as any;
+                for (let item of _data["workOrders"])
+                    this.workOrders!.push(WorkOrder.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): Customer {
+        data = typeof data === 'object' ? data : {};
+        let result = new Customer();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.workOrders)) {
+            data["workOrders"] = [];
+            for (let item of this.workOrders)
+                data["workOrders"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICustomer extends IPerson {
+    workOrders?: WorkOrder[] | undefined;
 }
 
 export class UpdateEmployeeCommand implements IUpdateEmployeeCommand {

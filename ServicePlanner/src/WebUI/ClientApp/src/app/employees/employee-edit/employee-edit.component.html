@@ -1,1 +1,40 @@
-<p>employee-edit works!</p>
+<div class="container mt-5">
+    <h2>{{ isEditMode ? 'Uredi Zaposlenog' : 'Dodaj Zaposlenog' }}</h2>
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="firstName">Ime</label>
+        <input type="text" id="firstName" formControlName="firstName" class="form-control" 
+        [ngClass]="{ 'is-invalid': employeeForm.get('firstName').invalid && employeeForm.get('firstName').touched }"
+        >
+      </div>
+      <div *ngIf="employeeForm.get('firstName').invalid && employeeForm.get('firstName').touched" class="invalid-feedback">
+        <small *ngIf="employeeForm.get('firstName').errors?.required">First name is required.</small>
+      </div>
+      <div class="form-group">
+        <label for="lastName">Prezime</label>
+        <input type="text" id="lastName" formControlName="lastName" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="phone">Telefon</label>
+        <input type="text" id="phone" formControlName="phone" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="address">Adresa</label>
+        <input type="text" id="address" formControlName="address" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="city">Grad</label>
+        <input type="text" id="city" formControlName="city" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="country">Država</label>
+        <input type="text" id="country" formControlName="country" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="notes">Napomene</label>
+        <textarea id="notes" formControlName="notes" class="form-control"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">{{ isEditMode ? 'Save changes' : 'Create employee' }}</button>
+    </form>
+  </div>
+  

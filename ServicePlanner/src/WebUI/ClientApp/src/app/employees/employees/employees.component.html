@@ -1,5 +1,6 @@
 <div class="container mt-5">
   <h2>Employees</h2>
+  <a routerLink="/employees/add" class="btn btn-success mb-3">Add new employee</a>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -11,6 +12,7 @@
           <th>Adresa</th>
           <th>Grad</th>
           <th>Država</th> -->
+          <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -23,6 +25,9 @@
         <td>{{ employee.address }}</td>
         <td>{{ employee.city }}</td>
         <td>{{ employee.country }}</td> -->
+        <td>
+          <a [routerLink]="['/employees/edit', employee.id]" class="btn btn-primary">Edit</a>
+        </td>
       </tr>
     </tbody>
   </table>
