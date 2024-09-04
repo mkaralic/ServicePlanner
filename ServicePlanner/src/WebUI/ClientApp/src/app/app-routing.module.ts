@@ -9,6 +9,7 @@ import { TokenComponent } from './token/token.component';
 import { EmployeesComponent } from './employees/employees/employees.component';
 import { CustomersComponent } from './customers/customers/customers.component';
 import { WorkOrdersComponent } from './work-orders/work-orders/work-orders.component';
+import { EmployeeEditComponent } from './employees/employee-edit/employee-edit.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -16,6 +17,8 @@ export const routes: Routes = [
   { path: 'fetch-data', component: FetchDataComponent },
   { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
   { path: 'employees', component: EmployeesComponent, canActivate: [AuthorizeGuard] },
+  { path: 'employees/edit/:id', component: EmployeeEditComponent },
+  { path: 'employees/add', component: EmployeeEditComponent },
   { path: 'customers', component: CustomersComponent, canActivate: [AuthorizeGuard] },
   { path: 'work-orders', component: WorkOrdersComponent, canActivate: [AuthorizeGuard] },
   { path: 'token', component: TokenComponent, canActivate: [AuthorizeGuard] }

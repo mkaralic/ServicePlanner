@@ -18,7 +18,6 @@ import { ApiAuthorizationModule } from 'src/api-authorization/api-authorization.
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EmployeesComponent } from './employees/employees/employees.component';
-import { EmployeeComponent } from './employees/employee/employee.component';
 import { EmployeesListComponent } from './employees/employees-list/employees-list.component';
 import { CustomersComponent } from './customers/customers/customers.component';
 import { CustomerComponent } from './customers/customer/customer.component';
@@ -27,6 +26,7 @@ import { WorkOrdersComponent } from './work-orders/work-orders/work-orders.compo
 import { WorkOrdersListComponent } from './work-orders/work-orders-list/work-orders-list.component';
 import { WorkOrderComponent } from './work-orders/work-order/work-order.component';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { EmployeeEditComponent } from './employees/employee-edit/employee-edit.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,14 +37,14 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     TodoComponent,
     TokenComponent,
     EmployeesComponent,
-    EmployeeComponent,
     EmployeesListComponent,
     CustomersComponent,
     CustomerComponent,
     CustomersListComponent,
     WorkOrdersComponent,
     WorkOrdersListComponent,
-    WorkOrderComponent
+    WorkOrderComponent,
+    EmployeeEditComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 // import { EmployeeService } from '../employee.service';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { EmployeeBriefDto, EmployeesClient, IEmployeeBriefDto } from 'src/app/web-api-client';
+import { EmployeeBriefDto, EmployeesClient, IEmployeeBriefDto, PaginatedListOfCustomerBriefDto } from 'src/app/web-api-client';
 
 @Component({
   selector: 'app-employees',
@@ -11,7 +11,7 @@ import { EmployeeBriefDto, EmployeesClient, IEmployeeBriefDto } from 'src/app/we
 })
 export class EmployeesComponent implements OnInit {
 
-  employees: IEmployeeBriefDto[] = [{id: 1, fullName: "Milorad Karalic"}];
+  employees: IEmployeeBriefDto[] = [{ id: 1, fullName: "Milorad Karalic" }];
   totalItems = 0;
   currentPage = 1;
   itemsPerPage = 10;
@@ -30,19 +30,19 @@ export class EmployeesComponent implements OnInit {
 
   }
 
-    loadEmployees(): void {
-      this.employeesClient.getEmployeesWithPagination("", this.currentPage, this.itemsPerPage).subscribe(
-        data => {
-          this.employees = data.items;
-          this.totalItems = data.totalCount;
-        },
-        error => {
-          console.error('Error loading employees', error);
-        }
-      );
-    }
-  
-    onPageChange(event: any): void {
-      this.router.navigate(['/employees/page', event.page]);
-    }
+  loadEmployees(): void {
+    this.employeesClient.getEmployeesWithPagination("", this.currentPage, this.itemsPerPage).subscribe({
+      next: (data: PaginatedListOfCustomerBriefDto) => {
+        this.employees = data.items;
+        this.totalItems = data.totalCount;
+      },
+      error: (error: any) => {
+        console.error('Error loading employees', error);
+      }
+    });
+  }
+
+  onPageChange(event: any): void {
+    this.router.navigate(['/employees/page', event.page]);
+  }
 }
