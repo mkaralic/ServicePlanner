@@ -1,1 +1,31 @@
-<p>customers works!</p>
+<div class="container mt-5">
+    <h2>Employees</h2>
+    <a routerLink="/customers/add" class="btn btn-success mb-3">Add new customer</a>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+            <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of customers">
+          <td>{{ customer.id }}</td>
+          <td>{{ customer.fullName }}</td>
+          <td>
+            <a [routerLink]="['/customers', customer.id]" class="btn btn-primary">Edit</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <pagination
+      [totalItems]="totalItems"
+      [(ngModel)]="currentPage"
+      [itemsPerPage]="itemsPerPage"
+      (pageChanged)="onPageChange($event)"
+      class="d-flex justify-content-center mt-3"
+    >
+    </pagination>
+  </div>
+  

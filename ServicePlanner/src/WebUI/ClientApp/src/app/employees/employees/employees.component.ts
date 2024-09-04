@@ -14,7 +14,7 @@ export class EmployeesComponent implements OnInit {
   employees: IEmployeeBriefDto[] = [{ id: 1, fullName: "Milorad Karalic" }];
   totalItems = 0;
   currentPage = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 2;
 
   constructor(
     private employeesClient: EmployeesClient,
@@ -23,8 +23,8 @@ export class EmployeesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.currentPage = +params['page'] || 1;
+    this.route.queryParams.subscribe(queryParams => {
+      this.currentPage = queryParams['page'] ? +queryParams['page'] : 1;
       this.loadEmployees();
     });
 
@@ -43,6 +43,6 @@ export class EmployeesComponent implements OnInit {
   }
 
   onPageChange(event: any): void {
-    this.router.navigate(['/employees/page', event.page]);
+    this.router.navigate(['/employees'], {queryParams: {page: event.page}});
   }
 }
