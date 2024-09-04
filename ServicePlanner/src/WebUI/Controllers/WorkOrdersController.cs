@@ -5,6 +5,7 @@ using ServicePlanner.Application.WorkOrders.Commands.DeleteWorkOrder;
 using ServicePlanner.Application.WorkOrders.Commands.UpdateWorkOrder;
 using ServicePlanner.Application.WorkOrders.Queries.GetWorkOrder;
 using ServicePlanner.Application.WorkOrders.Queries.GetWorkOrdersWithPagination;
+using ServicePlanner.Domain.Entities.ServicePlanner;
 using ServicePlanner.WebUI.Controllers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -16,7 +17,7 @@ public class WorkOrdersController : ApiControllerBase
 {
     // POST api/<WorkOrdersController>
     [HttpPost]
-    public async Task<ActionResult<int>> Create(CreateWorkOrderCommand command)
+    public async Task<ActionResult<int>> CreateWorkOrder(CreateWorkOrderCommand command)
     {
         var result = await Mediator.Send(command);
         return CreatedAtRoute("NameForGetWorkOrderEndpoint", new { id = result }, result);
@@ -31,7 +32,7 @@ public class WorkOrdersController : ApiControllerBase
 
     // GET api/<WorkOrdersController>/5
     [HttpGet("{id}", Name = "NameForGetWorkOrderEndpoint")]
-    public async Task<ActionResult> GetWorkOrder(int id)
+    public async Task<ActionResult<WorkOrder>> GetWorkOrder(int id)
     {
         var command = new GetWorkOrderQuery() { Id = id };
         var result = await Mediator.Send(command);
@@ -40,7 +41,7 @@ public class WorkOrdersController : ApiControllerBase
 
     // PUT api/<WorkOrdersController>/5
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, UpdateWorkOrderCommand command)
+    public async Task<ActionResult> UpdateWorkOrder(int id, UpdateWorkOrderCommand command)
     {
         if (id != command.Id)
         {
@@ -54,7 +55,7 @@ public class WorkOrdersController : ApiControllerBase
 
     // DELETE api/<WorkOrdersController>/5
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public async Task<ActionResult> DeleteWorkOrder(int id)
     {
         await Mediator.Send(new DeleteWorkOrderCommand(id));
 
