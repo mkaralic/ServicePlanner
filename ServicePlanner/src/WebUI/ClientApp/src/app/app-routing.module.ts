@@ -20,14 +20,14 @@ export const routes: Routes = [
   { path: 'fetch-data', component: FetchDataComponent },
   { path: 'todo', component: TodoComponent, canActivate: [AuthorizeGuard] },
   { path: 'employees', component: EmployeesComponent, canActivate: [AuthorizeGuard] },
-  { path: 'employees/:id', component: EmployeeEditComponent, canActivate: [AuthorizeGuard] },
   { path: 'employees/add', component: EmployeeEditComponent, canActivate: [AuthorizeGuard] },
+  { path: 'employees/:id', component: EmployeeEditComponent, canActivate: [AuthorizeGuard] },
   { path: 'customers', component: CustomersComponent, canActivate: [AuthorizeGuard] },
-  { path: 'customers/:id', component: CustomerComponent, canActivate: [AuthorizeGuard] },
   { path: 'customers/add', component: CustomerComponent, canActivate: [AuthorizeGuard] },
+  { path: 'customers/:id', component: CustomerComponent, canActivate: [AuthorizeGuard] },
   { path: 'work-orders', component: WorkOrdersListComponent, canActivate: [AuthorizeGuard] },
-  { path: 'work-orders/:id', component: WorkOrderComponent, canActivate: [AuthorizeGuard] },
   { path: 'work-orders/add', component: WorkOrderComponent, canActivate: [AuthorizeGuard] },
+  { path: 'work-orders/:id', component: WorkOrderComponent, canActivate: [AuthorizeGuard] },
   { path: 'token', component: TokenComponent, canActivate: [AuthorizeGuard] }
 ];
 

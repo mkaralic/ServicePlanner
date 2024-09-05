@@ -20,6 +20,6 @@ public class CreateWorkOrderCommandValidator : AbstractValidator<CreateWorkOrder
 
         // check if WorkOrderId is not null, then it must exist in WorkOrders
         RuleFor(x => x.EmployeeId)
-            .Must(employeeId => !employeeId.HasValue || _context.Customers.Any(c => c.Id == employeeId)).WithMessage("Employee doesn't exist.");
+            .Must(employeeId => !employeeId.HasValue || _context.Employees.Any(e => e.Id == employeeId)).WithMessage("Employee doesn't exist.");
     }
 }
