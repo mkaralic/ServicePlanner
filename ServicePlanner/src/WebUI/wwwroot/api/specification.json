@@ -192,6 +192,40 @@
         }
       }
     },
+    "/api/WorkOrderStatuses": {
+      "get": {
+        "tags": [
+          "WorkOrderStatuses"
+        ],
+        "operationId": "WorkOrderStatuses_GetWorkOrderStatuses",
+        "parameters": [
+          {
+            "name": "Name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkOrderStatus"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Customers": {
       "post": {
         "tags": [

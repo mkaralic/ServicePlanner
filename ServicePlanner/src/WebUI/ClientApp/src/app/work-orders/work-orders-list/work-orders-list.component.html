@@ -1,1 +1,36 @@
-<p>work-orders-list works!</p>
+<!-- work-orders-list.component.html -->
+<div class="container">
+
+    <h2>Work Orders</h2>
+    <a routerLink="/work-orders/add" class="btn btn-success mb-3">Add new Work order</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Datum Kreiranja</th>
+                <th>Kupac</th>
+                <th>Opis Usluge</th>
+                <th>Ukupno</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let workOrder of workOrders">
+                <td>{{ workOrder.id }}</td>
+                <td>{{ workOrder.created | date:'short' }}</td>
+                <td>{{ workOrder.customer }}</td>
+                <td>{{ workOrder.serviceDescription }}</td>
+                <td>{{ workOrder.total | currency:'RSD':'symbol' }}</td>
+                <td>{{ workOrder.status }}</td>
+                <td>
+                    <a [routerLink]="['/work-orders', workOrder.id]" class="btn btn-primary">Edit</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <pagination [totalItems]="totalItems" [(ngModel)]="currentPage" [itemsPerPage]="itemsPerPage"
+        (pageChanged)="onPageChange($event)" class="d-flex justify-content-center mt-3">
+    </pagination>
+</div>
