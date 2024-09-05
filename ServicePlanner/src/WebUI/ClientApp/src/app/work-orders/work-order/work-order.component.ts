@@ -32,10 +32,10 @@ export class WorkOrderComponent implements OnInit {
     this.workOrderForm = this.fb.group({
       id: [''],
       serviceDescription: ['', [Validators.required, Validators.maxLength(250)]],
-      total: [null, [Validators.required, Validators.min(0)]],
+      total: [null, [Validators.min(0)]],
       workOrderStatusId: [null, Validators.required],
-      customerId: [null, Validators.required],
-      employeeId: [null, Validators.required],
+      customerId: [null],
+      employeeId: [null],
       notes: ['']
     });
 

@@ -1,51 +1,58 @@
 <!-- work-order.component.html -->
-<div class="container">
-    <h1>{{ workOrderId ? 'Izmeni Radni Nalog' : 'Kreiraj Novi Radni Nalog' }}</h1>
-  
-    <form [formGroup]="workOrderForm" (ngSubmit)="saveWorkOrder()">
-      <div class="form-group">
-        <label for="serviceDescription">Opis Usluge</label>
-        <input type="text" id="serviceDescription" formControlName="serviceDescription" class="form-control" [ngClass]="{'is-invalid': workOrderForm.get('serviceDescription').invalid && workOrderForm.get('serviceDescription').touched}" />
-        <div class="invalid-feedback" *ngIf="workOrderForm.get('serviceDescription').invalid && workOrderForm.get('serviceDescription').touched">
-          Obavezno polje, maksimalno 250 karaktera.
-        </div>
+<div class="container mt-5">
+  <h1>{{ workOrderId ? 'Edit Work Order' : 'Add New Work Order' }}</h1>
+
+  <form [formGroup]="workOrderForm" (ngSubmit)="saveWorkOrder()">
+    <div class="form-group">
+      <label for="serviceDescription">Description</label>
+      <input type="text" id="serviceDescription" formControlName="serviceDescription" class="form-control"
+        [ngClass]="{'is-invalid': workOrderForm.get('serviceDescription').invalid && workOrderForm.get('serviceDescription').touched}" />
+      <div class="invalid-feedback"
+        *ngIf="workOrderForm.get('serviceDescription').invalid && workOrderForm.get('serviceDescription').touched">
+        Description is mandatory with 250 characters max.
       </div>
-  
-      <div class="form-group">
-        <label for="total">Ukupno</label>
-        <input type="number" id="total" formControlName="total" class="form-control" [ngClass]="{'is-invalid': workOrderForm.get('total').invalid && workOrderForm.get('total').touched}" />
-        <div class="invalid-feedback" *ngIf="workOrderForm.get('total').invalid && workOrderForm.get('total').touched">
-          Morate uneti ispravan iznos.
-        </div>
+    </div>
+
+    <div class="form-group">
+      <label for="total">Total</label>
+      <input type="number" id="total" formControlName="total" class="form-control"
+        [ngClass]="{'is-invalid': workOrderForm.get('total').invalid && workOrderForm.get('total').touched}" />
+      <div class="invalid-feedback" *ngIf="workOrderForm.get('total').invalid && workOrderForm.get('total').touched">
+        Please enter correct amount.
       </div>
-  
-      <div class="form-group">
-        <label for="workOrderStatusId">Status Radnog Naloga</label>
-        <select id="workOrderStatusId" formControlName="workOrderStatusId" class="form-control">
-          <option *ngFor="let status of workOrderStatuses" [value]="status.id">{{ status.name }}</option>
-        </select>
-      </div>
-  
-      <div class="form-group">
-        <label for="customerId">Kupac</label>
-        <select id="customerId" formControlName="customerId" class="form-control">
-          <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.fullName }}</option>
-        </select>
-      </div>
-  
-      <div class="form-group">
-        <label for="employeeId">Zaposleni</label>
-        <select id="employeeId" formControlName="employeeId" class="form-control">
-          <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.fullName }}</option>
-        </select>
-      </div>
-  
-      <div class="form-group">
-        <label for="notes">Beleške</label>
-        <textarea id="notes" formControlName="notes" class="form-control"></textarea>
-      </div>
-  
-      <button type="submit" class="btn btn-primary">Sačuvaj</button>
-    </form>
-  </div>
-  
+    </div>
+
+    <div class="form-group">
+      <label for="workOrderStatusId">Status</label>
+      <select id="workOrderStatusId" formControlName="workOrderStatusId" class="form-control">
+        <option *ngFor="let status of workOrderStatuses" [value]="status.id">{{ status.name }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="customerId">Customer</label>
+      <select id="customerId" formControlName="customerId" class="form-control">
+        <option [value]=""></option>
+        <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.fullName }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="employeeId">Employee/Servicer</label>
+      <select id="employeeId" formControlName="employeeId" class="form-control">
+        <option [value]=""></option>
+        <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.fullName }}</option>
+      </select>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="notes">Notes</label>
+      <textarea id="notes" formControlName="notes" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary" [disabled]="workOrderForm.invalid">{{ workOrderId ? 'Save changes' :
+        'Create work order' }}</button>
+    </div>
+  </form>
+</div>

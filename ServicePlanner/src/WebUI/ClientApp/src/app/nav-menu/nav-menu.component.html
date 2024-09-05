@@ -3,7 +3,7 @@
     class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
   >
     <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">ServicePlanner.WebUI</a>
+      <a class="navbar-brand" [routerLink]="['/']">ServicePlanner</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -27,7 +27,7 @@
           >
             <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
@@ -35,22 +35,22 @@
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/todo']">Todo</a>
-          </li>
+          </li> -->
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/employees']">Employees</a>
+            <a class="nav-link text-dark" [routerLink]="['/work-orders']">Work Orders</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/customers']">Customers</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/work-orders']">Work Orders</a>
+            <a class="nav-link text-dark" [routerLink]="['/employees']">Employees</a>
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
+          <!-- <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/token']">JWT</a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-dark" href="/api" target="_blank">API</a>
-          </li>
+          </li> -->
         </ul>
         <app-login-menu></app-login-menu>
       </div>
