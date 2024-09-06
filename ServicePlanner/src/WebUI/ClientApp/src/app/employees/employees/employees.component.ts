@@ -14,7 +14,7 @@ export class EmployeesComponent implements OnInit {
   employees: IEmployeeBriefDto[] = [{ id: 1, fullName: "Milorad Karalic" }];
   totalItems = 0;
   currentPage = 1;
-  itemsPerPage = 2;
+  itemsPerPage = 10;
 
   constructor(
     private employeesClient: EmployeesClient,
@@ -24,17 +24,20 @@ export class EmployeesComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(queryParams => {
-      this.currentPage = queryParams['page'] ? +queryParams['page'] : 1;
-      this.loadEmployees();
+      let page = queryParams['page'] ? +queryParams['page'] : 1;
+      this.loadEmployees(page);
     });
 
   }
 
-  loadEmployees(): void {
-    this.employeesClient.getEmployeesWithPagination("", this.currentPage, this.itemsPerPage).subscribe({
+  loadEmployees(pageId: number): void {
+    this.employeesClient.getEmployeesWithPagination("", pageId, this.itemsPerPage).subscribe({
       next: (data: PaginatedListOfCustomerBriefDto) => {
         this.employees = data.items;
         this.totalItems = data.totalCount;
+        setTimeout(() => 
+          this.currentPage = pageId
+        , 0);
       },
       error: (error: any) => {
         console.error('Error loading employees', error);

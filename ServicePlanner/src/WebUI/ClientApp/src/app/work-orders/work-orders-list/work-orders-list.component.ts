@@ -12,7 +12,7 @@ export class WorkOrdersListComponent implements OnInit {
   workOrders: IWorkOrderBriefDto[];
   totalItems = 0;
   currentPage = 1;
-  itemsPerPage = 2;
+  itemsPerPage = 10;
 
   constructor(
     private workOrdersClient: WorkOrdersClient,
@@ -22,17 +22,20 @@ export class WorkOrdersListComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(queryParams => {
-      this.currentPage = queryParams['page'] ? +queryParams['page'] : 1;
-      this.loadWorkOrders();
+      let page = queryParams['page'] ? +queryParams['page'] : 1;
+      this.loadWorkOrders(page);
     });
 
   }
 
-  loadWorkOrders(): void {
-    this.workOrdersClient.getWorkOrdersWithPagination("", this.currentPage, this.itemsPerPage).subscribe({
+  loadWorkOrders(pageId: number): void {
+    this.workOrdersClient.getWorkOrdersWithPagination("", pageId, this.itemsPerPage).subscribe({
       next: (data: PaginatedListOfWorkOrderBriefDto) => {
         this.workOrders = data.items;
         this.totalItems = data.totalCount;
+        setTimeout(() => 
+          this.currentPage = pageId
+        , 0);
       },
       error: (error: any) => {
         console.error('Error loading work orders', error);

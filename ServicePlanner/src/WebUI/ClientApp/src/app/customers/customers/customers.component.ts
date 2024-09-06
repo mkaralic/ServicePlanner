@@ -14,7 +14,7 @@ export class CustomersComponent implements OnInit {
   customers: ICustomerBriefDto[] = [{ id: 1, fullName: "Milorad Karalic" }];
   totalItems = 0;
   currentPage = 1;
-  itemsPerPage = 2;
+  itemsPerPage = 10;
 
   constructor(
     private customersClient: CustomersClient,
@@ -24,17 +24,20 @@ export class CustomersComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(queryParams => {
-      this.currentPage = queryParams['page'] ? +queryParams['page'] : 1;
-      this.loadCustomers();
+      let page = queryParams['page'] ? +queryParams['page'] : 1;
+      this.loadCustomers(page);
     });
 
   }
 
-  loadCustomers(): void {
-    this.customersClient.getCustomersWithPagination("", this.currentPage, this.itemsPerPage).subscribe({
+  loadCustomers(pageId: number): void {
+    this.customersClient.getCustomersWithPagination("", pageId, this.itemsPerPage).subscribe({
       next: (data: PaginatedListOfCustomerBriefDto) => {
         this.customers = data.items;
         this.totalItems = data.totalCount;
+        setTimeout(() => 
+          this.currentPage = pageId
+        , 0);
       },
       error: (error: any) => {
         console.error('Error loading customers', error);
