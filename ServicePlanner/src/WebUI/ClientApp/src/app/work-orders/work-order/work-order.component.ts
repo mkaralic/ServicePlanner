@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Location } from '@angular/common'
 import { 
   WorkOrdersClient, WorkOrder, 
   EmployeesClient, EmployeeBriefDto, IEmployeeBriefDto, 
@@ -28,6 +29,7 @@ export class WorkOrderComponent implements OnInit {
     private employeesClient: EmployeesClient,
     private customersClient: CustomersClient,
     private workOrderStatusesClient: WorkOrderStatusesClient,
+    private location: Location
   ) { 
     this.workOrderForm = this.fb.group({
       id: [''],
@@ -69,7 +71,7 @@ export class WorkOrderComponent implements OnInit {
     if (this.workOrderForm.valid) {
       if (this.workOrderId) {
         this.workOrdersClient.updateWorkOrder(this.workOrderId, this.workOrderForm.value).subscribe(() => {
-          this.router.navigate(['/work-orders']);
+          this.location.back();
         });
       } else {
         this.workOrdersClient.createWorkOrder(this.workOrderForm.value).subscribe(() => {
